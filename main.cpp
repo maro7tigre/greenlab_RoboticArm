@@ -209,10 +209,15 @@ ServoData inversekinematics(float x, float y, float z) {
   float angle0= angle0_offset +  angle0_scale*theta0_deg;
   float angle1= angle1_offset  + angle1_scale*theta1_deg;
   float angle2= angle2_offset + angle2_scale*theta2_deg;
+  
+  if (angle0 < 0 || angle0 > 180 || angle1 < 0 || angle1 > 180 || angle2 < 0 || angle2 > 180) {
+    Serial.println("position invalide !!!");
+    angle0 = constrain(angle0, 0, 180);
+    angle1 = constrain(angle1, 0, 180);
+    angle2 = constrain(angle2, 0, 180);
+  }
 
-  angle0 = constrain(angle0, 0, 180);
-  angle1 = constrain(angle1, 0, 180);
-  angle2 = constrain(angle2, 0, 180);
+
 
 
 
