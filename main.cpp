@@ -3,6 +3,9 @@
 
 // Pin definitions for servos
 const int SERVO_PINS[4] = {9, 10, 11, 12}; // Adjust pins as needed
+// L1 L2
+const int L1 = 113.64 ; // reel value is 113.64 mm
+const int L2 =  86.63; //reel value is  86.63 mm ; il y a aussi la longeur de la tige entre la base et theta1 c'est L0 = 83.40 mm
 
 Servo servos[4]; // Array to hold servo objects
 String inputBuffer = ""; // Buffer for incoming serial data
@@ -158,13 +161,13 @@ ServoData inversekinematics(float x, float y, float z) {
   ServoData data;
 
  // offset
-  double angle1_offset = -90 ;
-   double angle2_offset = 0 ;
-   double angle3_offset = 180  ;
+  double angle0_offset = 90 ;
+   double angle1_offset = 180 ;
+   double angle2_offset = 90  ;
   // scale
-   double angle1_scale = 1 ;
-   double angle2_scale = 1 ;
-   double angle3_scale = -1 ;
+   double angle0_scale = 1 ;
+   double angle1_scale = -1 ;
+   double angle2_scale = -1 ;
   
   double r = sqrt(x * x + y * y);  // distance projection XY
   double R = sqrt(r * r + z * z);  // distance au point
@@ -174,7 +177,7 @@ ServoData inversekinematics(float x, float y, float z) {
 
   if (abs(c2) > 1 || abs(c1) > 1 || R > L1 + L2 ||  R < abs(L1 -L2)) {
     Serial.println("Erreur: position impossible !");
-    for (int i = 0; i < 4; i++) Data.valid[i] = false;
+    for (int i = 0; i < 4; i++) data.valid[i] = false;
     return data;
   }
 
@@ -186,21 +189,30 @@ ServoData inversekinematics(float x, float y, float z) {
   double theta1_deg = theta1 * 180.0 / M_PI;
   double theta2_deg = theta2 * 180.0 / M_PI;
 
-  //if (theta0_deg < 0) theta0_deg += 360;
-  //if (theta1_deg < 0) theta1_deg += 360;
-    if (theta2_deg <= 0) theta2_deg = 90 + theta2_deg;
+  if(x < 0 && y >= 0){
+    theta0_deg -= 180;
+    theta1_deg = 180  - theta1_deg;
+    theta2_deg = -theta2_deg  ;
+  }
+  else if(x < 0 && y<0){
+       theta0_deg += 180;
+       theta1_deg = 180  - theta1_deg;
+       theta2_deg = -theta2_deg;
+  }
 
-  theta0_deg = constrain(theta0_deg, angle1_offset*angle1_scale, 180 + angle1_offset*angle1_scale );
-  theta1_deg = constrain(theta1_deg, angle2_offset*angle2_scale, 180 + angle2_offset*angle2_scale);
-  theta2_deg = constrain(theta2_deg, angle3_offset*angle3_scale, 180 + angle3_offset*angle3_scale);
 
-  float angle0= angle1_offset +  angle1_scale*theta0_deg;
-  float angle1= angle2_offset  + angle2_scale*theta1_deg;
-  float angle2= angle3_offset + angle3_scale*theta2_deg;
 
-  angle0 = constrain(theta0_deg, 0, 180);
-  angle1 = constrain(theta1_deg, 0, 180);
-  angle2 = constrain(theta2_deg, 0, 180);
+  /*theta0_deg = constrain(theta0_deg, angle0_offset*angle0_scale, 180 + angle0_offset*angle0_scale );
+  theta1_deg = constrain(theta1_deg, angle1_offset*angle1_scale, 180 + angle1_offset*angle1_scale);
+  theta2_deg = constrain(theta2_deg, angle2_offset*angle2_scale, 180 + angle2_offset*angle2_scale);*/
+
+  float angle0= angle0_offset +  angle0_scale*theta0_deg;
+  float angle1= angle1_offset  + angle1_scale*theta1_deg;
+  float angle2= angle2_offset + angle2_scale*theta2_deg;
+
+  angle0 = constrain(angle0, 0, 180);
+  angle1 = constrain(angle1, 0, 180);
+  angle2 = constrain(angle2, 0, 180);
 
 
 
