@@ -6,6 +6,7 @@ const int SERVO_PINS[4] = {9, 10, 11, 12}; // Adjust pins as needed
 // L1 L2
 const int L1 = 113.64 ; // reel value is 113.64 mm
 const int L2 =  86.63; //reel value is  86.63 mm ; il y a aussi la longeur de la tige entre la base et theta1 c'est L0 = 83.40 mm
+const int L0 = 83.40; // en mm
 
 Servo servos[4]; // Array to hold servo objects
 String inputBuffer = ""; // Buffer for incoming serial data
@@ -162,11 +163,11 @@ ServoData inversekinematics(float x, float y, float z) {
 
  // offset
   double angle0_offset = 90 ;
-   double angle1_offset = 180 ;
+   double angle1_offset = 0 ;
    double angle2_offset = 90  ;
   // scale
    double angle0_scale = 1 ;
-   double angle1_scale = -1 ;
+   double angle1_scale = 1 ;
    double angle2_scale = -1 ;
   
   double r = sqrt(x * x + y * y);  // distance projection XY
